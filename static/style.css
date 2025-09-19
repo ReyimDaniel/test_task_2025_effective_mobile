@@ -1,0 +1,215 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 60px auto;
+}
+
+.container textarea {
+    font-family: Arial, sans-serif;
+}
+
+.auth-container {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 350px;
+    margin: 100px auto;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.auth-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.auth-container input {
+    width: 93%;
+    padding: 12px;
+    font-size: 15px;
+}
+
+.resume-card h2 {
+    margin-top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.resume-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.resume-id {
+    font-size: 14px;
+    color: #888;
+}
+
+.resume-card p {
+    font-size: 15px;
+    margin: 10px 0 20px;
+}
+
+form {
+    margin-bottom: 15px;
+}
+
+input, textarea {
+    width: 97%;
+    padding: 10px;
+    margin: 5px 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+
+label {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+button, input[type="submit"] {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button:hover, input[type="submit"]:hover {
+    opacity: 0.9;
+}
+
+button.delete-btn, input.delete-btn {
+    background: #e74c3c;
+    color: white;
+}
+
+button:not(.delete-btn), input[type="submit"]:not(.delete-btn) {
+    background: #4CAF50;
+    color: white;
+}
+
+.header h2 {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    font-size: 32px;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+.header button:hover {
+    opacity: 0.6;
+}
+
+.header button:not(.delete-btn) {
+    background: red;
+    color: white;
+    margin: 15px 5px 5px;
+}
+
+.auth-container p {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.auth-container a {
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+.auth-container a:hover {
+    text-decoration: underline;
+}
+
+.error {
+    color: red;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.post-card {
+    border: 1px solid #dddddd;
+    border-radius: 5% 10% 10% 5%;
+    padding: 10px;
+    margin: 20px;
+}
+
+.header-login {
+    text-align: right;
+    padding-top: 25px;
+}
+
+.header-login a {
+    font-family: Arial, sans-serif;
+    text-decoration: none;
+    color: white;
+    border: 1px solid #4CAF50;
+    background: #4CAF50;
+    border-radius: 6px;
+    padding: 5px;
+    margin: 5px;
+}
+
+.header-login a:hover {
+    opacity: 0.8;
+}
+
+.header-non {
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+.post-card a {
+    font-family: Arial, sans-serif;
+    text-decoration: none;
+    color: white;
+    border: 1px solid #4CAF50;
+    background: #4CAF50;
+    border-radius: 6px;
+    padding: 5px;
+    margin: 5px;
+}
+
+.btn-my-posts {
+    font-family: Arial, sans-serif;
+    text-decoration: none;
+    color: white;
+    border: 1px solid #4CAF50;
+    background: #4CAF50;
+    border-radius: 6px;
+    padding: 5px;
+    margin: 5px;
+}
+
+.btn-my-posts:hover {
+    opacity: 0.8;
+}

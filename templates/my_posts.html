@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Ваши посты</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="header">
+    <h2>Добро пожаловать, {{ user.username }}!</h2>
+    <a href="/index" class="btn-my-posts">Главная страница</a>
+    <form method="post" action="/logout">
+        <button class="logout" type="submit">Выйти</button>
+    </form>
+</div>
+<div class="container">
+    <h1>Ваши посты</h1>
+    <div class="post-card new-post">
+        <h2>Создайте новый пост!</h2>
+        <form method="post" action="/create_post">
+            <input type="text" name="title" placeholder="Заголовок поста" required>
+            <textarea name="description" placeholder="Описание"></textarea>
+            <input type="number" name="required_access_id" placeholder="Уровень допуска" min="1" max="3" required>
+            <button type="submit">Создать</button>
+        </form>
+    </div>
+    {% for post in posts %}
+    <div class="post-card">
+        <h2>{{ post.tittle }} </h2>
+        <span class="post-id">#{{ post.id }}</span>
+        <p>{{ post.description }}</p>
+        <p>{{ post.required_access_id }}</p>
+        <form method="post" action="/update_post" class="form-inline">
+            <input type="hidden" name="post_id" value="{{ post.id }}">
+            <input type="text" name="title" placeholder="Новый заголовок">
+            <textarea name="description" placeholder="Новое описание"></textarea>
+            <input type="number" name="required_access_id" placeholder="Новый уровень допуска" min="1" max="3" required>
+            <button type="submit">Обновить</button>
+        </form>
+        <form method="post" action="/delete_post/{{ post.id }}" class="form-inline">
+            <button type="submit" class="delete-btn">Удалить</button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Ваши посты</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="header">
+    <h2>Добро пожаловать, {{ user.username }}!</h2>
+    <a href="/my_posts" class="btn-my-posts">Мои посты</a>
+    <form method="post" action="/logout">
+        <button class="logout" type="submit">Выйти</button>
+    </form>
+</div>
+
+<div class="container">
+    <h1>Посты</h1>
+    {% for post in posts %}
+    <div class="post-card">
+        <h2>{{ post.tittle }}</h2>
+        {% if user.access_id >= post.required_access_id %}
+        <p>{{ post.description }}</p>
+        {% else %}
+        <a href="/posts/{{ post.id }}">Смотреть описание</a>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>FastAPI Post NetWork</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="header-non">
+    <h1>FastAPI Post NetWork</h1>
+</div>
+<div class="header-login">
+    <a href="/login">Войти</a> | <a href="/register">Регистрация</a>
+</div>
+<div class="container">
+    <h1>Все посты</h1>
+    {% for post in posts %}
+    <div class="post-card">
+        <h2>{{ post.tittle }}</h2>
+        <a href="/posts/{{ post.id }}">Смотреть описание</a>
+    </div>
+    {% endfor %}
+</div>
+</body>
+</html>
