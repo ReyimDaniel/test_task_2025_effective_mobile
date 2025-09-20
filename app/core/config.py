@@ -9,8 +9,8 @@ class Settings(BaseSettings):
     db_echo: bool = False
 
     jwt_algorithm: str = "RS256"
-    jwt_private_key_path: Path = BASE_DIR / "certs" / "jwt-private-key.pem"
-    jwt_public_key_path: Path = BASE_DIR / "certs" / "jwt-public-key.pem"
+    jwt_private_key: str
+    jwt_public_key: str
     jwt_access_token_expire_minutes: int = 60
     jwt_response_token_expire_days: int = 7
 
