@@ -31,7 +31,7 @@ async def register(user: UserCreate, session: AsyncSession = Depends(db_helper.g
     return {"msg": "User registered successfully"}
 
 
-@router.post("/log", response_model=Token)
+@router.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(),
                 session: AsyncSession = Depends(db_helper.get_scoped_session)):
     result = await session.execute(select(User).where(User.email == form_data.username))

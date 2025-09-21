@@ -8,6 +8,7 @@
 <body>
 <div class="header">
     <h2>Добро пожаловать, {{ user.username }}!</h2>
+    <a href="/profile" class="btn-my-posts">Мой профиль</a>
     <a href="/my_posts" class="btn-my-posts">Мои посты</a>
     <form method="post" action="/logout">
         <button class="logout" type="submit">Выйти</button>

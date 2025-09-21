@@ -26,7 +26,7 @@ app.include_router(router=user_router, prefix="/user")
 app.include_router(router=post_router, prefix="/post")
 app.include_router(router=web_router)
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent
 STATIC_DIR = BASE_DIR / "static"
 TEMPLATES_DIR = BASE_DIR / "templates"
 
@@ -50,9 +50,9 @@ async def global_exception_handler(request, exc: Exception):
     return JSONResponse(status_code=500, content="Внутренняя ошибка сервера")
 
 
-# @app.get("/", response_class=HTMLResponse)
-# async def root(request: Request):
-#     return templates.TemplateResponse("index.html", {"request": request})
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)

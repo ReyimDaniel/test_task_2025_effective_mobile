@@ -17,12 +17,14 @@ router = APIRouter(tags=['posts'])
             description="Эндпоинт для получения всех постов из базы данных.")
 async def get_all_posts(session: AsyncSession = Depends(db_helper.scoped_session_dependency),
                         current_user: User = Depends(get_current_user)):
-    return await post_repository.get_posts(session=session, owner_id=current_user.id)
+    return await post_repository.get_posts(session=session, owner_id=current_user.id,
+                                           required_access=current_user.access_id)
 
 
 async def get_post_by_id(post_id: int, session: AsyncSession = Depends(db_helper.scoped_session_dependency),
                          current_user: User = Depends(get_current_user)):
-    post = await post_repository.get_post_by_id(session=session, post_id=post_id)
+    post = await post_repository.get_post_by_id(session=session, post_id=post_id,
+                                                required_access=current_user.access_id)
     if not post or post.owner_id != current_user.id:
         raise HTTPException(status_code=404, detail="Post not found")
     return post
@@ -36,7 +38,8 @@ async def create_post(
         session: AsyncSession = Depends(db_helper.scoped_session_dependency),
         current_user: User = Depends(get_current_user)
 ):
-    return await post_repository.create_post(session=session, post_in=post_in, owner_id=current_user.id)
+    return await post_repository.create_post(session=session, post_in=post_in, required_access=current_user.access_id,
+                                             owner_id=current_user.id)
 
 
 @router.get('/{post_id}', response_model=PostRead,
@@ -53,7 +56,8 @@ async def get_post(post: PostRead = Depends(get_post_by_id)):
 async def update_post(post_id: int, post_update: PostUpdate,
                       session: AsyncSession = Depends(db_helper.scoped_session_dependency),
                       current_user: User = Depends(get_current_user)):
-    post = await post_repository.get_post_by_id(session, post_id)
+    post = await post_repository.get_post_by_id(session=session, post_id=post_id,
+                                                required_access=current_user.access_id)
     if not post or post.owner_id != current_user.id:
         raise HTTPException(status_code=404, detail="Post not found")
     return await similar_repository.update_entry(session=session, model=post, schema=post_update)
@@ -65,7 +69,8 @@ async def update_post(post_id: int, post_update: PostUpdate,
 async def update_post(post_id: int, post_update: PostUpdate,
                       session: AsyncSession = Depends(db_helper.scoped_session_dependency),
                       current_user: User = Depends(get_current_user)):
-    post = await post_repository.get_post_by_id(session, post_id)
+    post = await post_repository.get_post_by_id(session=session, post_id=post_id,
+                                                required_access=current_user.access_id)
     if not post or post.owner_id != current_user.id:
         raise HTTPException(status_code=404, detail="Post not found")
     return await similar_repository.update_entry(session=session, model=post, schema=post_update, partial=True)
@@ -77,7 +82,8 @@ async def update_post(post_id: int, post_update: PostUpdate,
                            "Необходимо ввести ID поста, который нужно удалить.")
 async def delete_post(post_id: int, session: AsyncSession = Depends(db_helper.scoped_session_dependency),
                       current_user: User = Depends(get_current_user)):
-    post = await post_repository.get_post_by_id(session=session, post_id=post_id)
+    post = await post_repository.get_post_by_id(session=session, post_id=post_id,
+                                                required_access=current_user.access_id)
     if not post or post.owner_id != current_user.id:
         raise HTTPException(status_code=404, detail="Post not found")
     await post_repository.delete_post(session=session, post=post)

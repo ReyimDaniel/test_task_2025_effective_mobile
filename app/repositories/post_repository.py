@@ -7,10 +7,17 @@ from app.models import Post
 from app.schemas.post import PostCreate
 
 
-async def get_posts(session: AsyncSession, owner_id: int):
+async def get_posts(session: AsyncSession, owner_id: int, required_access: int):
     try:
-        result = await session.execute(select(Post).where(Post.owner_id == owner_id).order_by(Post.id))
-        return result.scalars().all()
+        result = await session.execute(
+            select(Post).where(Post.owner_id == owner_id, Post.required_access_id <= required_access).order_by(Post.id))
+        posts = result.scalars().all()
+        if not posts:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Недостаточно прав для доступа к ресурсу или его не существует."
+            )
+        return posts
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
@@ -23,20 +30,28 @@ async def get_all_posts(session: AsyncSession):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-async def get_post_by_id(session: AsyncSession, post_id: int) -> Post | None:
+async def get_post_by_id(session: AsyncSession, post_id: int, required_access: int) -> Post | None:
     try:
-        return await session.get(Post, post_id)
+        result = await session.execute(
+            select(Post).where(Post.id == post_id, Post.required_access_id <= required_access))
+        post = result.scalars().first()
+        if not post:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Недостаточно прав для доступа к ресурсу {post_id} или его не существует."
+            )
+        return post
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"Post {post_id} not found. More detailed: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Ошибка при получении поста {post_id}: {str(e)}")
 
 
-async def create_post(session: AsyncSession, post_in: PostCreate, owner_id: int) -> Post:
+async def create_post(session: AsyncSession, post_in: PostCreate, required_access: int, owner_id: int) -> Post:
     try:
         db_post = Post(
             tittle=post_in.tittle,
             description=post_in.description,
-            required_access_id=post_in.required_access_id,
+            required_access_id=required_access,
             owner_id=owner_id,
         )
         session.add(db_post)

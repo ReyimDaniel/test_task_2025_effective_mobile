@@ -2,14 +2,15 @@ from pathlib import Path
 
 from fastapi import APIRouter, Request, Form, Depends, HTTPException
 from fastapi.responses import RedirectResponse
+from fastapi.templating import Jinja2Templates
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette import status
 from starlette.status import HTTP_303_SEE_OTHER
-from fastapi.templating import Jinja2Templates
 
 from app.auth.service.jwt_service import verify_password, create_access_token, decode_jwt_token
 from app.core.db_helper import db_helper
-from app.models import User, Post
+from app.models import User
 from app.models.user import RoleEnum
 from app.repositories import user_repository, post_repository, similar_repository
 from app.schemas.post import PostCreate, PostUpdate
@@ -39,7 +40,7 @@ async def login_submit(
 ):
     db_user = await user_repository.get_user_by_email(session, email)
     if not db_user or not verify_password(password, db_user.password):
-        return RedirectResponse("/login?msg=Неверные данные", status_code=HTTP_303_SEE_OTHER)
+        return RedirectResponse("/login?msg=Неправильный логин или пароль.", status_code=HTTP_303_SEE_OTHER)
     token = create_access_token({"sub": db_user.email})
     response = RedirectResponse("/index", status_code=HTTP_303_SEE_OTHER)
     response.set_cookie(key="access_token", value=token, httponly=True)
@@ -97,8 +98,8 @@ async def get_current_user_from_cookie_optional(request: Request, session: Async
         return None
     try:
         payload = decode_jwt_token(token)
-    except Exception:
-        return None
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
     email = payload.get("sub")
     if not email:
         return None
@@ -142,8 +143,11 @@ async def create_post(
     user = await get_current_user_from_cookie(request, session)
     if not user:
         return RedirectResponse("/login", status_code=HTTP_303_SEE_OTHER)
-    await post_repository.create_post(session, PostCreate(tittle=title, description=description,
-                                                          required_access_id=required_access_id), owner_id=user.id)
+    await post_repository.create_post(session, PostCreate(
+        tittle=title,
+        description=description,
+        required_access_id=required_access_id),
+                                      required_access=user.access_id, owner_id=user.id)
     return RedirectResponse("/index", status_code=HTTP_303_SEE_OTHER)
 
 
@@ -153,7 +157,7 @@ async def delete_post(post_id: int, request: Request,
     user = await get_current_user_from_cookie(request, session)
     if not user:
         return RedirectResponse("/login", status_code=HTTP_303_SEE_OTHER)
-    post = await post_repository.get_post_by_id(session=session, post_id=post_id)
+    post = await post_repository.get_post_by_id(session=session, post_id=post_id, required_access=user.access_id)
     if post and post.owner_id == user.id:
         await post_repository.delete_post(session=session, post=post)
     return RedirectResponse("/index", status_code=HTTP_303_SEE_OTHER)
@@ -172,7 +176,7 @@ async def update_post(
     if not user:
         return RedirectResponse("/login", status_code=HTTP_303_SEE_OTHER)
 
-    post = await post_repository.get_post_by_id(session=session, post_id=post_id)
+    post = await post_repository.get_post_by_id(session=session, post_id=post_id, required_access=user.access_id)
     if post and post.owner_id == user.id:
         schema = PostUpdate(tittle=title, description=description, required_access_id=required_access_id)
         await similar_repository.update_entry(session=session, model=post, schema=schema)
@@ -191,7 +195,7 @@ async def update_post_partial(
     user = await get_current_user_from_cookie(request, session)
     if not user:
         return RedirectResponse("/login", status_code=HTTP_303_SEE_OTHER)
-    post = await post_repository.get_post_by_id(session, post_id)
+    post = await post_repository.get_post_by_id(session, post_id, required_access=user.access_id)
     if not post or post.owner_id != user.id:
         raise HTTPException(status_code=404, detail="post not found")
     update_data = {
@@ -208,18 +212,12 @@ async def update_post_partial(
 @router.get("/post/{post_id}")
 async def get_post(post_id: int, request: Request,
                    session: AsyncSession = Depends(db_helper.scoped_session_dependency)):
-    post = await post_repository.get_post_by_id(session=session, post_id=post_id)
-    if not post:
-        raise HTTPException(status_code=404, detail="Пост не найден")
-
     user = await get_current_user_from_cookie(request, session)
-
     if not user:
         return RedirectResponse("/login", status_code=303)
-
-    if user.access_id < post.required_access_id:
-        raise HTTPException(status_code=403, detail="Доступ запрещен")
-
+    post = await post_repository.get_post_by_id(session=session, post_id=post_id, required_access=user.access_id)
+    if not post:
+        raise HTTPException(status_code=404, detail="Пост не найден")
     return templates.TemplateResponse("post_detail.html", {"request": request, "post": post, "user": user})
 
 
@@ -229,5 +227,15 @@ async def my_posts(request: Request, session: AsyncSession = Depends(db_helper.s
     if not user:
         return RedirectResponse("/login?msg=Для доступа авторизуйтесь", status_code=HTTP_303_SEE_OTHER)
 
-    posts = await post_repository.get_posts(session=session, owner_id=user.id)
+    posts = await post_repository.get_posts(session=session, owner_id=user.id, required_access=user.access_id)
     return templates.TemplateResponse("my_posts.html", {"request": request, "user": user, "posts": posts})
+
+
+@router.get("/profile")
+async def my_profile(request: Request, session: AsyncSession = Depends(db_helper.scoped_session_dependency)):
+    user = await get_current_user_from_cookie(request=request, session=session)
+    if not user:
+        return RedirectResponse("/login?msg=Для доступа авторизуйтесь", status_code=HTTP_303_SEE_OTHER)
+
+    posts = await post_repository.get_posts(session=session, owner_id=user.id, required_access=user.access_id)
+    return templates.TemplateResponse("profile.html", {"request": request, "user": user, "posts": posts})

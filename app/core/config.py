@@ -1,16 +1,16 @@
 from pathlib import Path
 from pydantic_settings import BaseSettings
 
-BASE_DIR = Path(__file__).parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 class Settings(BaseSettings):
     db_url: str
     db_echo: bool = False
 
+    jwt_private_key_path: str
+    jwt_public_key_path: str
     jwt_algorithm: str = "RS256"
-    jwt_private_key: str
-    jwt_public_key: str
     jwt_access_token_expire_minutes: int = 60
     jwt_response_token_expire_days: int = 7
 
@@ -20,6 +20,14 @@ class Settings(BaseSettings):
     class Config:
         env_file = BASE_DIR / ".env"
         env_file_encoding = 'utf-8'
+
+    @property
+    def jwt_private_key(self) -> str:
+        return (BASE_DIR / self.jwt_private_key_path).read_text(encoding="utf-8")
+
+    @property
+    def jwt_public_key(self) -> str:
+        return (BASE_DIR / self.jwt_public_key_path).read_text(encoding="utf-8")
 
 
 settings = Settings()

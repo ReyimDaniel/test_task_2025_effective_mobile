@@ -136,6 +136,14 @@ button:not(.delete-btn), input[type="submit"]:not(.delete-btn) {
     margin: 15px 5px 5px;
 }
 
+.header a {
+display: block;
+    margin-top: 10px;
+    width: 150px;
+    text-align: center;
+    padding: 6px 0;
+}
+
 .auth-container p {
     text-align: center;
     margin-top: 15px;
@@ -212,4 +220,10 @@ button:not(.delete-btn), input[type="submit"]:not(.delete-btn) {
 
 .btn-my-posts:hover {
     opacity: 0.8;
+}
+
+.profile-card-submit {
+    font-family: Arial, sans-serif;
+    margin: 15px 0 10px;
+    padding: 8px 16px;
 }

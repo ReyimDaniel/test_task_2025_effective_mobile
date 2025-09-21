@@ -7,7 +7,8 @@ class PostBase(BaseModel):
 
 
 class PostCreate(PostBase):
-    required_access_id: int
+    # required_access_id: int
+    pass
 
 
 class PostRead(BaseModel):

@@ -1,12 +1,12 @@
 from fastapi import HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.engine import Result
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
 from app.auth.service.jwt_service import get_password_hash
-from app.models import User, Post
-from app.schemas.user import UserCreate, UserUpdate, UserUpdatePartial
+from app.models import User
+from app.schemas.user import UserCreate
 
 
 async def get_users(session: AsyncSession) -> list[User]:

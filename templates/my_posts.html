@@ -8,6 +8,7 @@
 <body>
 <div class="header">
     <h2>Добро пожаловать, {{ user.username }}!</h2>
+    <a href="/profile" class="btn-my-posts">Мой профиль</a>
     <a href="/index" class="btn-my-posts">Главная страница</a>
     <form method="post" action="/logout">
         <button class="logout" type="submit">Выйти</button>
@@ -38,7 +39,7 @@
             <button type="submit">Обновить</button>
         </form>
         <form method="post" action="/delete_post/{{ post.id }}" class="form-inline">
-            <button type="submit" class="delete-btn">Удалить</button>
+            <button type="submit">Удалить</button>
         </form>
     </div>
     {% endfor %}
