@@ -31,7 +31,7 @@
         <span class="post-id">#{{ post.id }}</span>
         <p>{{ post.description }}</p>
         <p>{{ post.required_access_id }}</p>
-        <form method="post" action="/update_post" class="form-inline">
+        <form method="post" action="/update_post_partial" class="form-inline">
             <input type="hidden" name="post_id" value="{{ post.id }}">
             <input type="text" name="title" placeholder="Новый заголовок">
             <textarea name="description" placeholder="Новое описание"></textarea>

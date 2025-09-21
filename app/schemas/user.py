@@ -4,11 +4,11 @@ from app.models.user import RoleEnum
 
 
 class UserBase(BaseModel):
-    username: str
-    email: EmailStr
-    role: RoleEnum
-    is_active: bool
-    access_id: int
+    username: str | None = None
+    email: EmailStr | None = None
+    role: RoleEnum | None = None
+    is_active: bool | None = None
+    access_id: int | None = None
 
     class Config:
         from_attributes = True
@@ -20,6 +20,8 @@ class UserCreate(UserBase):
 
 class UserUpdate(UserBase):
     password: str | None = None
+    is_active: bool | None = None
+    access_id: int | None = None
 
 
 class UserUpdatePartial(UserBase):

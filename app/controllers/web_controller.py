@@ -14,7 +14,7 @@ from app.models import User
 from app.models.user import RoleEnum
 from app.repositories import user_repository, post_repository, similar_repository
 from app.schemas.post import PostCreate, PostUpdate
-from app.schemas.user import UserCreate
+from app.schemas.user import UserCreate, UserUpdate
 
 router = APIRouter()
 BASE_DIR = Path(__file__).parent.parent.parent
@@ -239,3 +239,48 @@ async def my_profile(request: Request, session: AsyncSession = Depends(db_helper
 
     posts = await post_repository.get_posts(session=session, owner_id=user.id, required_access=user.access_id)
     return templates.TemplateResponse("profile.html", {"request": request, "user": user, "posts": posts})
+
+
+@router.post("/update_user_partial")
+async def update_user_partial(
+    username: str | None = Form(None),
+    email: str | None = Form(None),
+    password: str | None = Form(None),
+    role: str | None = Form(None),
+    request: Request = None,
+    session: AsyncSession = Depends(db_helper.scoped_session_dependency)
+):
+    user = await get_current_user_from_cookie(request, session)
+    if not user:
+        return RedirectResponse("/login", status_code=HTTP_303_SEE_OTHER)
+
+    update_data = {
+        "username": username if username and username.strip() else None,
+        "email": email if email and email.strip() else None,
+        "password": password if password and password.strip() else None,
+        "role": role if role else None,
+    }
+    update_data = {k: v for k, v in update_data.items() if v is not None}
+
+    print("Update data:", update_data)  # отладка
+
+    if update_data:
+        user_update = UserUpdate(**update_data, is_active=user.is_active, access_id=user.access_id)
+        await similar_repository.update_entry(session, user, user_update, partial=True)
+
+    return RedirectResponse("/profile", status_code=HTTP_303_SEE_OTHER)
+
+
+
+@router.post("/delete_user")
+async def delete_user(
+        request: Request,
+        session: AsyncSession = Depends(db_helper.scoped_session_dependency)
+):
+    user = await get_current_user_from_cookie(request, session)
+    if not user:
+        return RedirectResponse("/login", status_code=status.HTTP_303_SEE_OTHER)
+    await user_repository.soft_delete_user(session, user)
+    response = RedirectResponse("/login", status_code=status.HTTP_303_SEE_OTHER)
+    response.delete_cookie("access_token")
+    return response

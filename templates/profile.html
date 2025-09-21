@@ -18,11 +18,11 @@
     <h1>Ваш профиль</h1>
     <div class="profile-card">
         <h2>Редактировать профиль</h2>
-        <form method="post" action="/update_user">
-            <input type="text" name="username" value="{{ user.username }}" placeholder="Ваше имя" required>
-            <input type="email" name="email" value="{{ user.email }}" placeholder="Ваша почта" required>
+        <form method="post" action="/update_user_partial">
+            <input type="text" name="username" value="{{ user.username }}" placeholder="Ваше имя">
+            <input type="email" name="email" value="{{ user.email }}" placeholder="Ваша почта">
             <input type="password" name="password" placeholder="Пароль. Оставьте пустым, если без изменений.">
-            <select name="role" required>
+            <select name="role">
                 <option value="Пользователь">Пользователь</option>
                 <option value="Администратор">Администратор</option>
                 <option value="Модератор">Модератор</option>
