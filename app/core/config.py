@@ -21,13 +21,5 @@ class Settings(BaseSettings):
         env_file = BASE_DIR / ".env"
         env_file_encoding = 'utf-8'
 
-    @property
-    def jwt_private_key(self) -> str:
-        return (BASE_DIR / self.jwt_private_key_path).read_text(encoding="utf-8")
-
-    @property
-    def jwt_public_key(self) -> str:
-        return (BASE_DIR / self.jwt_public_key_path).read_text(encoding="utf-8")
-
 
 settings = Settings()
