@@ -12,11 +12,6 @@ async def get_posts(session: AsyncSession, owner_id: int, required_access: int):
         result = await session.execute(
             select(Post).where(Post.owner_id == owner_id, Post.required_access_id <= required_access).order_by(Post.id))
         posts = result.scalars().all()
-        if not posts:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Недостаточно прав для доступа к ресурсу или его не существует."
-            )
         return posts
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
